@@ -1,9 +1,17 @@
-# Obsidian Sample Plugin
+# TODO
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+- [ ] Choosing template folder
+- [ ] Popup with list of templates
+- [ ] Stylise each input
+- [ ] Add validation for each type of input
+- [ ] Add Date Picker
 
-This project uses Typescript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in Typescript Definition format, which contains TSDoc comments describing what it does.
+# Typed Templater - Obsidian Plugin
+
+This plugin allows you to use custom and typed (number, text, date) variables in template, by filling them in before your template is applied to the note.
+
+---
+---
 
 **Note:** The Obsidian API is still in early alpha and is subject to change at any time!
 
