@@ -1,5 +1,8 @@
-import { App, Modal, Setting } from "obsidian";
+import { App, Modal, Setting, FuzzySuggestModal, MarkdownView, Notice, TFile, Editor } from "obsidian";
 import { FieldDefinition } from "./domain";
+import TypedTemplaterPlugin from 'main'
+import graymatter from 'gray-matter'
+import { errorWrapperSync, getTFilesFromFolder, logError, TemplaterError } from "./utils";
 
 export class VariableValuesModal extends Modal {
   fieldDefenitions: FieldDefinition[];
@@ -68,5 +71,69 @@ export class VariableValuesModal extends Modal {
         )
         break
     }
+  }
+}
+
+export class TemplateSuggesterModal extends FuzzySuggestModal<TFile> {
+  private plugin: TypedTemplaterPlugin
+
+  constructor(app: App, plugin: TypedTemplaterPlugin) {
+    super(app);
+    this.plugin = plugin;
+    this.setPlaceholder("Type name of a template...");
+  }
+
+  getItems(): TFile[] {
+    console.log('settings', this.plugin.settings)
+    if (!this.plugin.settings.templatesFolder) {
+      return [];
+    }
+    const files = errorWrapperSync(
+      () => getTFilesFromFolder(this.plugin.settings.templatesFolder),
+      `Couldn't retrieve template files from templates folder ${this.plugin.settings.templatesFolder}`
+    );
+    if (!files) {
+      return [];
+    }
+    return files;
+  }
+
+  getItemText(item: TFile): string {
+      return item.basename;
+  }
+
+  async onChooseItem(item: TFile, evt: MouseEvent | KeyboardEvent): Promise<void> {
+    let templateContent = await this.app.vault.cachedRead(item)
+    const { data, content } = graymatter(templateContent)
+    const fieldDefs = data.templateVariables as FieldDefinition[]
+    delete data.templateVariables
+
+    new VariableValuesModal(this.app, fieldDefs, valuesMap => {
+      const editor = this.getEditor(app);
+
+      editor?.setValue(graymatter.stringify(this.renderTemplate(content, valuesMap), data))
+    }).open()
+  }
+
+  renderTemplate(templateContent: string, valuesMap: Map<string, string>): string {
+    let contentRaw = templateContent
+
+    for (const [id, value] of valuesMap) {
+      contentRaw = contentRaw.replace(`{{${id}}}`, value)
+    }
+
+    return contentRaw
+  }
+
+  getEditor(app: App): Editor | undefined {
+    const active_view = app.workspace.getActiveViewOfType(MarkdownView);
+      if (active_view === null) {
+        logError(
+          new TemplaterError("No active view, can't append templates.")
+        );
+        return;
+      }
+
+      return active_view.editor;
   }
 }

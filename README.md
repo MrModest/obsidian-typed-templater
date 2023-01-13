@@ -1,7 +1,10 @@
 # TODO
 
-- [ ] Choosing template folder
-- [ ] Popup with list of templates
+- [x] Choosing template folder
+- [x] Popup with list of templates
+- [ ] Check why I can't insert template twicely
+- [ ] Click Submit by Enter
+- [ ] Extracr Settings to separate filer
 - [ ] Stylise each input
 - [ ] Add validation for each type of input
 - [ ] Add Date Picker
