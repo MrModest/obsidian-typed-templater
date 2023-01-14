@@ -2,7 +2,7 @@ import { App, Modal, Setting, FuzzySuggestModal, MarkdownView, Notice, TFile, Ed
 import { FieldDefinition } from "./domain";
 import TypedTemplaterPlugin from 'main'
 import graymatter from 'gray-matter'
-import { errorWrapperSync, getTFilesFromFolder, logError, TemplaterError } from "./utils";
+import { errorWrapperSync, getTFilesFromFolder, logError, omit, TemplaterError } from "./utils";
 
 export class VariableValuesModal extends Modal {
   fieldDefenitions: FieldDefinition[];
@@ -84,7 +84,6 @@ export class TemplateSuggesterModal extends FuzzySuggestModal<TFile> {
   }
 
   getItems(): TFile[] {
-    console.log('settings', this.plugin.settings)
     if (!this.plugin.settings.templatesFolder) {
       return [];
     }
@@ -106,12 +105,18 @@ export class TemplateSuggesterModal extends FuzzySuggestModal<TFile> {
     let templateContent = await this.app.vault.cachedRead(item)
     const { data, content } = graymatter(templateContent)
     const fieldDefs = data.templateVariables as FieldDefinition[]
-    delete data.templateVariables
+    const frontmatter = omit(data, "templateVariables")
+
+    console.log("item", item)
+    console.log("templateContent", templateContent)
+    console.log("data", data)
+    console.log("frontmatter", frontmatter)
+    console.log("fieldDefs", fieldDefs)
 
     new VariableValuesModal(this.app, fieldDefs, valuesMap => {
       const editor = this.getEditor(app);
 
-      editor?.setValue(graymatter.stringify(this.renderTemplate(content, valuesMap), data))
+      editor?.setValue(graymatter.stringify(this.renderTemplate(content, valuesMap), frontmatter))
     }).open()
   }
 

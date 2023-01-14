@@ -2,7 +2,7 @@
 
 - [x] Choosing template folder
 - [x] Popup with list of templates
-- [ ] Check why I can't insert template twicely
+- [x] Check why I can't insert template twicely
 - [ ] Click Submit by Enter
 - [ ] Extracr Settings to separate filer
 - [ ] Stylise each input

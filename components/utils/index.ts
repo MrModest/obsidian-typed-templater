@@ -76,3 +76,9 @@ export class TemplaterError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 }
+
+export function omit(obj: any, omitKey: string) {
+    return Object.keys(obj)
+        .filter(key => key != omitKey)
+        .reduce((result, key) => ({...result, [key]: obj[key]}), {})
+}
