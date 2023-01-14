@@ -7,7 +7,18 @@
 - [ ] Extracr Settings to separate filer
 - [ ] Stylise each input
 - [ ] Add validation for each type of input
-- [ ] Add Date Picker
+- [ ] Add more field types (get inspiration from Notion)
+  - [ ] Date Picker
+  - [ ] Selector
+  - [ ] Multi-Selector
+  - [ ] Computed fields
+    - [ ] Timestamp
+- [ ] Add validation types for text fields
+  - [ ] Email
+  - [ ] Url
+  - [ ] RegExp
+- [ ] Allow to use variables in frontmatter
+- [ ] Allow to create a new note via template
 
 # Typed Templater - Obsidian Plugin
 
