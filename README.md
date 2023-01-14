@@ -3,7 +3,6 @@
 - [x] Choosing template folder
 - [x] Popup with list of templates
 - [ ] Click Submit by Enter
-- [ ] Extracr Settings to separate filer
 - [ ] Stylise each input
 - [ ] Add validation for each type of input
 - [ ] Add more field types (get inspiration from Notion)
