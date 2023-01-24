@@ -1,4 +1,7 @@
+import { FieldDefinition, NotePage } from "components/domain";
 import { normalizePath, Notice, TAbstractFile, TFile, TFolder, Vault } from "obsidian";
+import graymatter from 'gray-matter'
+import _ from "lodash";
 
 export function getTFilesFromFolder(folder_str: string): Array<TFile> {
     const folder = resolveTFolder(folder_str);
@@ -77,8 +80,18 @@ export class TemplaterError extends Error {
     }
 }
 
-export function omit(obj: any, omitKey: string) {
+export function omit(obj: any, omitKey: string): { [key: string]: any; } {
     return Object.keys(obj)
         .filter(key => key != omitKey)
         .reduce((result, key) => ({...result, [key]: obj[key]}), {})
+}
+
+export function toNotePage(raw: string): NotePage {
+    const { data, content } = graymatter(raw)
+
+    return { frontmatter: _.clone(data), body: content }
+}
+
+export function toRawString(note: NotePage): string {
+    return graymatter.stringify(note.body, note.frontmatter)
 }

@@ -1,8 +1,8 @@
-import { App, Modal, Setting, FuzzySuggestModal, MarkdownView, Notice, TFile, Editor } from "obsidian";
+import { Modal, Setting, FuzzySuggestModal, MarkdownView, TFile, Editor } from "obsidian";
 import { FieldDefinition } from "./domain";
 import TypedTemplaterPlugin from 'main'
-import graymatter from 'gray-matter'
-import { errorWrapperSync, getTFilesFromFolder, logError, omit, TemplaterError } from "./utils";
+import { errorWrapperSync, getTFilesFromFolder, logError, omit, TemplaterError, toNotePage, toRawString } from "./utils";
+import _ from 'lodash'
 
 export class VariableValuesModal extends Modal {
   fieldDefenitions: FieldDefinition[];
@@ -10,7 +10,6 @@ export class VariableValuesModal extends Modal {
   onSubmit: (fieldValuesMap: Map<string, string>) => void;
 
   constructor(
-    app: App,
     fieldDefenitions: FieldDefinition[],
     onSubmit: (fieldValuesMap: Map<string, string>
   ) => void) {
@@ -77,7 +76,7 @@ export class VariableValuesModal extends Modal {
 export class TemplateSuggesterModal extends FuzzySuggestModal<TFile> {
   private plugin: TypedTemplaterPlugin
 
-  constructor(app: App, plugin: TypedTemplaterPlugin) {
+  constructor(plugin: TypedTemplaterPlugin) {
     super(app);
     this.plugin = plugin;
     this.setPlaceholder("Type name of a template...");
@@ -103,20 +102,22 @@ export class TemplateSuggesterModal extends FuzzySuggestModal<TFile> {
 
   async onChooseItem(item: TFile, evt: MouseEvent | KeyboardEvent): Promise<void> {
     let templateContent = await this.app.vault.cachedRead(item)
-    const { data, content } = graymatter(templateContent)
-    const fieldDefs = data.templateVariables as FieldDefinition[]
-    const frontmatter = omit(data, "templateVariables")
+
+    const { frontmatter, body } = toNotePage(templateContent)
+    const fieldDefs = (frontmatter.templateVariables || []) as FieldDefinition[]
+    const frontmatterCopy = _.omit(frontmatter, ["templateVariables"])
+    const preparedTemplate = toRawString({ frontmatter: frontmatterCopy, body: body })
 
     console.log("item", item)
     console.log("templateContent", templateContent)
-    console.log("data", data)
     console.log("frontmatter", frontmatter)
+    console.log("frontmatterCopy", frontmatterCopy)
     console.log("fieldDefs", fieldDefs)
 
-    new VariableValuesModal(this.app, fieldDefs, valuesMap => {
-      const editor = this.getEditor(app);
+    new VariableValuesModal(fieldDefs, valuesMap => {
+      const editor = this.getEditor();
 
-      editor?.setValue(graymatter.stringify(this.renderTemplate(content, valuesMap), frontmatter))
+      editor?.setValue(this.renderTemplate(preparedTemplate, valuesMap))
     }).open()
   }
 
@@ -130,15 +131,15 @@ export class TemplateSuggesterModal extends FuzzySuggestModal<TFile> {
     return contentRaw
   }
 
-  getEditor(app: App): Editor | undefined {
+  getEditor(): Editor | undefined {
     const active_view = app.workspace.getActiveViewOfType(MarkdownView);
-      if (active_view === null) {
-        logError(
-          new TemplaterError("No active view, can't append templates.")
-        );
-        return;
-      }
+    if (active_view === null) {
+      logError(
+        new TemplaterError("No active view, can't append templates.")
+      );
+      return;
+    }
 
-      return active_view.editor;
+    return active_view.editor;
   }
 }

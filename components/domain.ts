@@ -10,5 +10,10 @@ export type FieldType =
 export interface FieldDefinition {
     key: string;
     label: string;
-    type: FieldType
+    type: FieldType;
+}
+
+export interface NotePage {
+    frontmatter: { [key: string]: any }
+    body: string
 }

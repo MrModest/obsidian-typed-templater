@@ -20,11 +20,11 @@ export default class TypedTemplaterPlugin extends Plugin {
 			id: 'obsidian-typed-templater-insert-template',
 			name: 'Insert Template',
 			callback: () => {
-				new TemplateSuggesterModal(this.app, this).open()
+				new TemplateSuggesterModal(this).open()
 			}
 		})
 
-		this.addSettingTab(new TypedTemplaterSettingTab(this.app, this));
+		this.addSettingTab(new TypedTemplaterSettingTab(this));
 	}
 
 	async loadSettings(): Promise<void> {
@@ -39,7 +39,7 @@ export default class TypedTemplaterPlugin extends Plugin {
 class TypedTemplaterSettingTab extends PluginSettingTab {
 	plugin: TypedTemplaterPlugin;
 
-	constructor(app: App, plugin: TypedTemplaterPlugin) {
+	constructor(plugin: TypedTemplaterPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
