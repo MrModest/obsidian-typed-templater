@@ -1,5 +1,5 @@
 import { Modal, Setting, FuzzySuggestModal, MarkdownView, TFile, Editor } from "obsidian";
-import { FieldDefinition } from "./domain";
+import { DropdownFieldDefinition, FieldDefinition } from "./domain";
 import TypedTemplaterPlugin from 'main'
 import { errorWrapperSync, getTFilesFromFolder, logError, omit, TemplaterError, toNotePage, toRawString } from "./utils";
 import _ from 'lodash'
@@ -69,6 +69,18 @@ export class VariableValuesModal extends Modal {
           comp.onChange(setValueOnChange)
         )
         break
+
+      case 'Select':
+        setting.addDropdown((comp) => {
+          const options = (fieldDef as DropdownFieldDefinition).options
+            .reduce(
+              (acc, item) => (acc[item] = item, acc),
+              {} as Record<string, string>
+            )
+
+          comp.addOptions(options)
+            .onChange(setValueOnChange)
+        })
     }
   }
 }
@@ -108,11 +120,7 @@ export class TemplateSuggesterModal extends FuzzySuggestModal<TFile> {
     const frontmatterCopy = _.omit(frontmatter, ["templateVariables"])
     const preparedTemplate = toRawString({ frontmatter: frontmatterCopy, body: body })
 
-    console.log("item", item)
-    console.log("templateContent", templateContent)
-    console.log("frontmatter", frontmatter)
-    console.log("frontmatterCopy", frontmatterCopy)
-    console.log("fieldDefs", fieldDefs)
+    console.log({ item, templateContent, frontmatter, frontmatterCopy, fieldDefs })
 
     new VariableValuesModal(fieldDefs, valuesMap => {
       const editor = this.getEditor();

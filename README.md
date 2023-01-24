@@ -7,7 +7,7 @@
 - [ ] Add validation for each type of input
 - [ ] Add more field types (get inspiration from Notion)
   - [ ] Date Picker
-  - [ ] Selector
+  - [x] Selector
   - [ ] Multi-Selector
   - [ ] Computed fields
     - [ ] Timestamp

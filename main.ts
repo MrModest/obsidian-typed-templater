@@ -1,4 +1,4 @@
-import { App, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { Plugin, PluginSettingTab, Setting } from 'obsidian';
 import { FolderSuggest } from 'components/suggesters/FolderSuggester';
 import { TemplateSuggesterModal } from 'components/modals';
 
