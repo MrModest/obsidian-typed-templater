@@ -22,7 +22,7 @@
 
 This plugin allows you to use custom and typed (number, text, date) variables in template, by filling them in before your template is applied to the note.
 
-![Demo CountPages alpha](/doc/ScreenRecord_TypedTemplater.gif)
+![Demo create a note via template](/doc/ScreenRecord_TypedTemplater.gif)
 
 ---
 ---
